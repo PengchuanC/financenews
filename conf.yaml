@@ -1,0 +1,23 @@
+# 数据库配置
+database:
+  host: 127.0.0.1
+  port: 3306
+  user: fund
+  pass: 123456
+  dbname: fund_filter
+
+# 今日头条Cookie
+token: "tt_webid=6735581713935746572; s_v_web_id=b5cd013f96ed046b048b3dc7bff3b92d; WEATHER_CITY=%E5%8C%97%E4%BA%AC; __tasessionId=9r5sghl3x1568249834865; tt_webid=6735581713935746572; csrftoken=da4551fe95a0e5d65ce7888cf3214de7"
+
+# 关键字配置
+keywords:
+  # 东方财富网关键字
+  eastmoney:
+    - '公募基金'
+    - 'ETF'
+  # 今日头条关键字
+  toutiao:
+    - '公募基金'
+    - 'ETF'
+
+cookie: "5"
