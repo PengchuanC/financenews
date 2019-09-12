@@ -1,6 +1,5 @@
 package main
 
-import "C"
 import (
 	"./configs"
 	"./database"
@@ -19,19 +18,21 @@ func init() {
 }
 
 func main() {
-	fmt.Println("爬虫任务调度器启动，当前周期为@hourly...")
+	fmt.Println("爬虫任务调度器启动，当前执行周期为@hourly...")
 	schedule := cron.New()
 	_ = schedule.AddFunc("@hourly", func() {
+		// "*/5 * * * * ?"
 		go searchEastMoney()
 		go searchTouTiao()
 		go searchHotNews()
 		info := fmt.Sprintf("\t%v 执行爬虫任务", time.Now().Format("2006-01-02 15:04:05"))
 		fmt.Println(info)
 	})
-	select{}
+	schedule.Start()
+	select {}
 }
 
-func searchEastMoney(){
+func searchEastMoney() {
 	for _, keyword := range c.KeyWords.EastMoney {
 		var n []eastmoney.News
 		n = eastmoney.SimpleRunner(keyword)
@@ -43,7 +44,7 @@ func searchEastMoney(){
 	}
 }
 
-func searchTouTiao(){
+func searchTouTiao() {
 	for _, keyword := range c.KeyWords.TouTiao {
 		cookie := c.Cookie
 		var n []toutiao.News
@@ -56,7 +57,6 @@ func searchTouTiao(){
 	}
 }
 
-
 func searchHotNews() {
 	n := hotnews.SimpleRunner()
 	dbn := formatHotNews(n)
@@ -65,7 +65,6 @@ func searchHotNews() {
 	db.InsertAll(dbn)
 	db.Close()
 }
-
 
 func getDB() database.DB {
 	dbc := c.DataBase
@@ -76,7 +75,7 @@ func getDB() database.DB {
 
 func formatEastMoney(news []eastmoney.News) []database.News {
 	var dbNews []database.News
-	for _, n := range news{
+	for _, n := range news {
 		var dbn database.News
 		dbn.Title = n.Title
 		dbn.Abstract = n.Abstract
@@ -91,7 +90,7 @@ func formatEastMoney(news []eastmoney.News) []database.News {
 
 func formatTouTiao(news []toutiao.News) []database.News {
 	var dbNews []database.News
-	for _, n := range news{
+	for _, n := range news {
 		var dbn database.News
 		dbn.Title = n.Title
 		dbn.Abstract = n.Abstract
@@ -104,10 +103,9 @@ func formatTouTiao(news []toutiao.News) []database.News {
 	return dbNews
 }
 
-
 func formatHotNews(news []hotnews.EastMoney) []database.News {
 	var dbNews []database.News
-	for _, n := range news{
+	for _, n := range news {
 		var dbn database.News
 		dbn.Title = n.Title
 		dbn.Abstract = n.Abstract

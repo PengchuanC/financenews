@@ -8,24 +8,23 @@ import (
 )
 
 type News struct {
-	Title string
+	Title    string
 	Abstract string
-	Url string
-	Source string
+	Url      string
+	Source   string
 	Savedate string
-	Keyword string
+	Keyword  string
 }
-
 
 /*
  * 数据库相关内容
-*/
+ */
 // 数据库连接参数
-type DB struct{
-	User string
-	Pass string
-	Host string
-	Port int
+type DB struct {
+	User     string
+	Pass     string
+	Host     string
+	Port     int
 	Database string
 	Instance *sqlx.DB
 }
@@ -42,14 +41,20 @@ func (d *DB) Connect() {
 
 func (d *DB) Insert(news News) {
 	db := d.Instance
-	if db == nil{
+	if db == nil {
 		panic("请初始化数据库连接")
 	}
 	tx := db.MustBegin()
-	_, err := tx.NamedExec("INSERT INTO finance_news(title, abstract, url, savedate, source, keyword) VALUES(:title, :abstract, :url, :savedate, :source, :keyword)", news)
+	var err error
+	if news.Keyword == "" {
+		_, err = tx.NamedExec("INSERT INTO finance_news(title, abstract, url, savedate, source) VALUES(:title, :abstract, :url, :savedate, :source)", news)
+	} else {
+		_, err = tx.NamedExec("INSERT INTO finance_news(title, abstract, url, savedate, source, keyword) VALUES(:title, :abstract, :url, :savedate, :source, :keyword)", news)
+	}
+
 	if err != nil {
 		_ = tx.Rollback()
-	}else{
+	} else {
 		_ = tx.Commit()
 	}
 }
@@ -67,9 +72,9 @@ func (d *DB) Close() {
 // 从命令行获取数据库Host
 func GetHost() string {
 	args := os.Args
-	if len(args) == 1{
+	if len(args) == 1 {
 		return "127.0.0.1"
-	}else{
+	} else {
 		return args[1]
 	}
 }

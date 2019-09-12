@@ -21,8 +21,8 @@ type KeyWordsConfig struct {
 
 type Config struct {
 	DataBase DataBaseConfig `json:"database"`
-	KeyWords KeyWordsConfig `json:"keyword"`
-	Cookie   string `json:"cookies"`
+	KeyWords KeyWordsConfig `json:"keywords"`
+	Cookie   string         `json:"cookies"`
 }
 
 func (c *Config) ReadConfig() {
