@@ -1,17 +1,63 @@
 package toutiao
 
 import (
+	"../configs"
 	"bytes"
 	"fmt"
 	"github.com/bitly/go-simplejson"
+	"github.com/fedesog/webdriver"
 	"github.com/kirinlabs/HttpRequest"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 const (
 	URL = "https://www.toutiao.com/api/search/content/?aid=24&app_name=web_search&count=20&format=json&autoload=true"
 )
+
+/*
+* 获取头条cookie
+ */
+func GetCookie() string {
+	cp := configs.ChromePath()
+	chrome := webdriver.NewChromeDriver(cp)
+	if err := chrome.Start(); err != nil {
+		panic(err)
+	}
+	desired := webdriver.Capabilities{"Platform": configs.Platform()}
+	required := webdriver.Capabilities{}
+	session, err := chrome.NewSession(desired, required)
+	if err != nil {
+		panic(err)
+	}
+
+	err = session.Url("https://www.toutiao.com")
+	if err != nil {
+		panic(err)
+	}
+
+	cookies, err := session.GetCookies()
+	if err != nil {
+		panic(err)
+	}
+
+	var cookieString string
+	for _, cookie := range cookies {
+		cookieString += strings.Join([]string{cookie.Name, "=", cookie.Value, ";"}, "")
+	}
+
+	err = session.Delete()
+	if err != nil {
+		panic(err)
+	}
+
+	err = chrome.Stop()
+	if err != nil {
+		panic(err)
+	}
+	return cookieString
+}
 
 func RequestParams(keyword string, offset int) string {
 	var _url string
@@ -87,6 +133,7 @@ func (h *HtmlBody) Info() []News {
 
 func SimpleRunner(keyword string, cookie string) []News {
 	var allNews []News
+
 	for offset := 0; offset < 180; offset += 20 {
 		data := GetHttpResponse(keyword, offset, cookie)
 		var body HtmlBody

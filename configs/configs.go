@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"path"
+	"runtime"
 )
 
 type DataBaseConfig struct {
@@ -34,4 +36,32 @@ func (c *Config) ReadConfig() {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
+}
+
+func ChromePath() string {
+	sys := runtime.GOOS
+	var chrome string
+	switch sys {
+	case "darwin":
+		chrome = path.Join("./plugins", "chromedriver_mac")
+	case "windows":
+		chrome = path.Join("./plugins", "chromedriver_win.exe")
+	case "linux":
+		chrome = path.Join("./plugin", "chromedriver_linux")
+	}
+	return chrome
+}
+
+func Platform() string {
+	sys := runtime.GOOS
+	var platform string
+	switch sys {
+	case "darwin":
+		platform = "Mac"
+	case "windows":
+		platform = "Windows"
+	case "linux":
+		platform = "Linux"
+	}
+	return platform
 }

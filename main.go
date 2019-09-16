@@ -45,8 +45,8 @@ func searchEastMoney() {
 }
 
 func searchTouTiao() {
+	cookie := toutiao.GetCookie()
 	for _, keyword := range c.KeyWords.TouTiao {
-		cookie := c.Cookie
 		var n []toutiao.News
 		n = toutiao.SimpleRunner(keyword, cookie)
 		dbn := formatTouTiao(n)
